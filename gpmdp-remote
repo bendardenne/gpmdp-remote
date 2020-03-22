@@ -42,9 +42,12 @@ time_total () {
 }
 
 gpmdp_status () {
+    pid=$(pidof "Google Play Music Desktop Player")
     gpmdp_status=$(awk -F ': |,' '/"playing"/ {printf $2}' "$json_file")
 
-    if [[ "$gpmdp_status" == *"true"* ]]; then
+    if [ -z "$pid"]; then
+        printf "%s\n" "Not running"
+    elif [[ "$gpmdp_status" == *"true"* ]]; then
         printf "%s\n" "Playing"
     elif [[ "$gpmdp_status" == *"false"* ]]; then
         printf "%s\n" "Paused"
@@ -60,7 +63,7 @@ gpmdp_info () {
 }
 
 current () {
-    printf "%s\n" "$(artist) - $(album) - $(title)"
+    printf "%s\n" "$(artist) - $(title)"
 }
 
 usage () { cat << EOF
@@ -75,7 +78,7 @@ usage () { cat << EOF
     time_current    Print current song time in milliseconds
     time_total      Print total song time in milliseconds
     status          Print whether GPMDP is paused or playing
-    current         Print now playing song in "artist - album - song" format
+    current         Print now playing song in "artist - song" format
     help            Print this help message
 
 EOF
@@ -95,4 +98,3 @@ case $1 in
     current) current ;;
     *) usage ;;
 esac
-
